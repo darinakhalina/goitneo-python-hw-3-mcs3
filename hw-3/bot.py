@@ -1,35 +1,67 @@
+from addressbook import AddressBook, Record
+
+
+# decorator
+def input_error(func):
+    def inner(args, book):
+        try:
+            return func(args, book)
+        except KeyError:
+            return "Give me defined contact please."
+        except ValueError:
+            return "Give me name and phone please."
+        except IndexError:
+            return "Give me name please."
+    return inner
+
+
+# add decorator
+@input_error
 def hello_command(*args):
     return "How can I help you?"
 
 
-def add_contact(args, contacts):
+# Example for ValueError
+# Enter a command: add testname - without phone
+@input_error
+def add_contact(args, book):
     name, phone = args
-    contacts[name] = phone
-    return "Contact added."
+    record = book.find(name)
+
+    if record:
+        record.add_phone(phone)
+        return f"phone was added to {name}'s record"
+
+    record = Record(name)
+    record.add_phone(phone)
+    book.add_record(record)
+    return f"{name} was added to your book"
 
 
-def change_contact(args, contacts):
-    name, phone = args
-    if name in contacts:
-        contacts[name] = phone
-        return "Contact updated."
-    else:
-        return f"Contact with '{name}' name is not found."
+# Example for KeyError
+# Enter a command: change invalidcontact 12345678 - with incorrect contact
+@input_error
+def change_contact(args, book):
+    name, old_phone, new_phone = args
+    record = book.find(name)
+
+    record.edit_phone(old_phone, new_phone)
+    return f"{name}'s contact was updated"
 
 
-def show_phone(args, contacts):
+# Example for IndexError
+# Enter a command: phone - without name
+@input_error
+def show_phone(args, book):
     name = args[0]
-    if name in contacts:
-        return contacts[name]
-    else:
-        return f"Contact with '{name}' name is not found."
+    record = book.find(name)
+    # if None - no phones
+    return str(record)
 
 
-def show_all(args, contacts):
-    all_contacts = []
-    for name, phone in contacts.items():
-        all_contacts.append(f"{name} - {phone}")
-    return "\n".join(all_contacts)
+@input_error
+def show_all(args, book):
+    return str(book)
 
 
 # map command names to the corresponding functions
@@ -50,8 +82,8 @@ def parse_input(user_input):
 
 
 def main():
-    # initializing an empty dictionary for contacts
-    contacts = {}
+    # use AddressBook
+    book = AddressBook()
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ")
@@ -72,7 +104,7 @@ def main():
 
         # invalid command
         if command_action is not None:
-            print(command_action(args, contacts))
+            print(command_action(args, book))
         else:
             print("Invalid command.")
 

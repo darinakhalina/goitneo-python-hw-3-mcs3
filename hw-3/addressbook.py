@@ -131,6 +131,14 @@ class AddressBook(UserDict):
 
         return result
 
+    def __str__(self):
+        # add if len = 0 no contacts
+        result = ""
+        for name in sorted(self.data.keys()):
+            result += str(self.data[name]) + "\n"
+
+        return result.rstrip()
+
 
 def main():
     try:
