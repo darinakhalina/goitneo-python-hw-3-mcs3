@@ -81,6 +81,7 @@ def show_all(args, book):
     return str(book)
 
 
+# toDo - add birthdays!!!!!!!!!
 # map command names to the corresponding functions
 COMMANDS = {
     hello_command: ("hello",),
