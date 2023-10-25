@@ -1,4 +1,21 @@
 from addressbook import AddressBook, Record
+import pickle
+
+
+def save_data_to_file(filename, data):
+    with open(filename, 'wb') as file:
+        pickle.dump(data, file)
+
+
+def load_data_from_file(filename):
+    try:
+        with open(filename, 'rb') as file:
+            data = pickle.load(file)
+            if not data:
+                return None
+            return data
+    except (FileNotFoundError, EOFError):
+        return None
 
 
 # decorator
@@ -85,13 +102,19 @@ def main():
     # use AddressBook
     book = AddressBook()
     print("Welcome to the assistant bot!")
+    loaded_book = load_data_from_file("address_book.pkl")
+    if loaded_book:
+        book = loaded_book
+        print("Address book loaded from file.")
+
     while True:
         user_input = input("Enter a command: ")
         command, *args = parse_input(user_input)
 
         # check if the user entered "close" or "exit" to exit
         if command in ["close", "exit"]:
-            print("Good bye!")
+            save_data_to_file("address_book.pkl", book)
+            print("Good bye! Address book saved to file.")
             break
 
         command_action = None
