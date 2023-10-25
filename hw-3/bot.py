@@ -1,4 +1,4 @@
-from addressbook import AddressBook, Record
+from address_book import AddressBook, Record
 import pickle
 
 
@@ -81,6 +81,27 @@ def show_all(args, book):
     return str(book)
 
 
+@input_error
+def add_birthday(args, book):
+    name, date = args
+    book.find(name).add_birthday(date)
+    return f"Added birth date for {name}"
+
+
+@input_error
+def show_birthday(args, book):
+    name = args[0]
+    user = book.find(name)
+
+    if not user:
+        return f"No saved birthday for {name}"
+
+    birthday = user.birthday
+
+    return str(birthday)
+
+
+# toDo - add delete contact
 # toDo - add birthdays!!!!!!!!!
 # map command names to the corresponding functions
 COMMANDS = {
@@ -89,6 +110,8 @@ COMMANDS = {
     change_contact: ("change",),
     show_phone: ("phone",),
     show_all: ("all",),
+    add_birthday: ("add-birthday",),
+    show_birthday: ("show-birthday",),
 }
 
 
@@ -110,10 +133,13 @@ def main():
 
     while True:
         user_input = input("Enter a command: ")
+        if not user_input:
+            continue
         command, *args = parse_input(user_input)
 
         # check if the user entered "close" or "exit" to exit
         if command in ["close", "exit"]:
+            # toDo add variable for file name
             save_data_to_file("address_book.pkl", book)
             print("Good bye! Address book saved to file.")
             break
