@@ -1,12 +1,16 @@
 from address_book import AddressBook, Record
 import pickle
 
+ADDRESS_BOOK_FILE = "address_book.pkl"
 
+
+# save data
 def save_data_to_file(filename, data):
     with open(filename, 'wb') as file:
         pickle.dump(data, file)
 
 
+# load data
 def load_data_from_file(filename):
     try:
         with open(filename, 'rb') as file:
@@ -18,11 +22,11 @@ def load_data_from_file(filename):
         return None
 
 
+# empty address book
 def create_empty_address_book():
     return AddressBook()
 
 
-# decorator
 def input_error(func):
     def inner(args, book):
         try:
@@ -30,7 +34,7 @@ def input_error(func):
         except KeyError:
             return "Give me defined contact please."
         except ValueError:
-            return "Give me name and phone please."
+            return "Give me correct command please."
         except IndexError:
             return "Give me name please."
     return inner
@@ -41,6 +45,7 @@ def hello_command(*args):
     return "How can I help you?"
 
 
+# command: add Test 1111111111 - number must contain 10 digits
 @input_error
 def add_contact(args, book):
     name, phone = args
@@ -48,44 +53,52 @@ def add_contact(args, book):
 
     if record:
         record.add_phone(phone)
-        return f"phone was added to {name}'s record"
+        return f"Phone is added to {name}'s record"
 
     record = Record(name)
     record.add_phone(phone)
     book.add_record(record)
-    return f"{name} was added to your book"
+    return f"{name} is added to your book"
 
 
+# command: change Test 1111111111 2222222222 - number must contain 10 digits
 @input_error
 def change_contact(args, book):
     name, old_phone, new_phone = args
     record = book.find(name)
 
     record.edit_phone(old_phone, new_phone)
-    return f"{name}'s contact was updated"
+    return f"{name}'s contact is updated"
 
 
+# command: phone Test
 @input_error
 def show_phone(args, book):
     name = args[0]
     record = book.find(name)
-    # if None - no phones
+    if not record:
+        return f"No saved contacts for {name}"
     return str(record)
 
 
+# command: all
 @input_error
 def show_all(args, book):
     return str(book)
 
 
+# command: add-birthday Test 01.11.2000
 @input_error
 def add_birthday(args, book):
     name, date = args
     user = book.find(name)
 
     if user:
-        user.add_birthday(date)
-        return f"Added birth date for {name}"
+        try:
+            user.add_birthday(date)
+            return f"Added birth date for {name}"
+        except Exception:
+            print("Use dd.mm.yyyy format")
     else:
         return (
             f"No user with the name '{name}' found.\n"
@@ -93,6 +106,7 @@ def add_birthday(args, book):
         )
 
 
+# command: show-birthday Test
 @input_error
 def show_birthday(args, book):
     name = args[0]
@@ -106,14 +120,13 @@ def show_birthday(args, book):
     return str(birthday)
 
 
+# command: birthdays
 @input_error
 def get_birthdays_per_week(args, book):
     users = book.get_birthdays_per_week()
     return users
 
 
-# toDo - add birthdays!!!!!!!!!
-# map command names to the corresponding functions
 COMMANDS = {
     hello_command: ("hello",),
     add_contact: ("add",),
@@ -136,10 +149,10 @@ def main():
     # use AddressBook
     book = AddressBook()
     print("Welcome to the assistant bot!")
-    loaded_book = load_data_from_file("address_book.pkl")
+    loaded_book = load_data_from_file(ADDRESS_BOOK_FILE)
     if loaded_book:
         book = loaded_book
-        print("Address book loaded from file.")
+        print("Address book is loaded from file.")
 
     while True:
         user_input = input("Enter a command: ")
@@ -149,13 +162,12 @@ def main():
 
         if command == "clear":
             book = create_empty_address_book()
-            print("Address book cleared.")
+            print("Address book is cleared.")
             continue
 
         if command in ["close", "exit"]:
-            # toDo add variable for file name !!!!!!!
-            save_data_to_file("address_book.pkl", book)
-            print("Good bye! Address book saved to file.")
+            save_data_to_file(ADDRESS_BOOK_FILE, book)
+            print("Good bye! Address book is saved to file.")
             break
 
         command_action = None

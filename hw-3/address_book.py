@@ -59,6 +59,9 @@ class Record:
         return phone
 
     def edit_phone(self, old_phone, new_phone):
+        if len(new_phone) != 10 or not new_phone.isdigit():
+            raise ValueError("The number must contain 10 digits.")
+
         phone = self.find_phone(old_phone)
         if phone:
             phone.value = new_phone
@@ -104,6 +107,7 @@ class AddressBook(UserDict):
             birthday = user.birthday.value if user.birthday else None
             if birthday:
                 birthday_this_year = birthday.replace(year=today.year)
+
                 if birthday_this_year:
 
                     if birthday_this_year < today:
@@ -153,13 +157,13 @@ def main():
         john_record = Record("John")
         john_record.add_phone("1234567890")
         john_record.add_phone("5555555555")
-        john_record.add_birthday("28.10.2000")
+        john_record.add_birthday("1.11.2000")
 
         book.add_record(john_record)
 
         jane_record = Record("Jane")
         jane_record.add_phone("9876543210")
-        jane_record.add_birthday("31.10.2001")
+        jane_record.add_birthday("2.11.2001")
         book.add_record(jane_record)
 
         for name, record in book.data.items():
@@ -182,7 +186,7 @@ def main():
             print(record)
 
     except Exception as e:
-        print(f'An error occurred: {str(e)}')
+        print(f'Error: {str(e)}')
 
 
 if __name__ == "__main__":
