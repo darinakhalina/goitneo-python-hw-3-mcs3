@@ -18,6 +18,10 @@ def load_data_from_file(filename):
         return None
 
 
+def create_empty_address_book():
+    return AddressBook()
+
+
 # decorator
 def input_error(func):
     def inner(args, book):
@@ -32,14 +36,11 @@ def input_error(func):
     return inner
 
 
-# add decorator
 @input_error
 def hello_command(*args):
     return "How can I help you?"
 
 
-# Example for ValueError
-# Enter a command: add testname - without phone
 @input_error
 def add_contact(args, book):
     name, phone = args
@@ -55,8 +56,6 @@ def add_contact(args, book):
     return f"{name} was added to your book"
 
 
-# Example for KeyError
-# Enter a command: change invalidcontact 12345678 - with incorrect contact
 @input_error
 def change_contact(args, book):
     name, old_phone, new_phone = args
@@ -66,8 +65,6 @@ def change_contact(args, book):
     return f"{name}'s contact was updated"
 
 
-# Example for IndexError
-# Enter a command: phone - without name
 @input_error
 def show_phone(args, book):
     name = args[0]
@@ -101,7 +98,6 @@ def show_birthday(args, book):
     return str(birthday)
 
 
-# toDo - add delete contact
 # toDo - add birthdays!!!!!!!!!
 # map command names to the corresponding functions
 COMMANDS = {
@@ -115,7 +111,6 @@ COMMANDS = {
 }
 
 
-# command and arguments from user input
 def parse_input(user_input):
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
@@ -137,22 +132,24 @@ def main():
             continue
         command, *args = parse_input(user_input)
 
-        # check if the user entered "close" or "exit" to exit
+        if command == "clear":
+            book = create_empty_address_book()
+            print("Address book cleared.")
+            continue
+
         if command in ["close", "exit"]:
-            # toDo add variable for file name
+            # toDo add variable for file name !!!!!!!
             save_data_to_file("address_book.pkl", book)
             print("Good bye! Address book saved to file.")
             break
 
         command_action = None
 
-        # identify the correct command
         for action, keys in COMMANDS.items():
             if command in keys:
                 command_action = action
                 break
 
-        # invalid command
         if command_action is not None:
             print(command_action(args, book))
         else:

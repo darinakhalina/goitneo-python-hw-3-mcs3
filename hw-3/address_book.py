@@ -132,60 +132,47 @@ class AddressBook(UserDict):
         return result
 
     def __str__(self):
-        # add if len = 0 no contacts
         result = ""
-        for name in sorted(self.data.keys()):
-            result += str(self.data[name]) + "\n"
-
+        if len(self.data) == 0:
+            result = "Address book is empty."
+        else:
+            for name in sorted(self.data.keys()):
+                result += str(self.data[name]) + "\n"
         return result.rstrip()
 
 
 def main():
     try:
-        # Створення нової адресної книги
         book = AddressBook()
 
-        # Створення запису для John
         john_record = Record("John")
         john_record.add_phone("1234567890")
         john_record.add_phone("5555555555")
-        # Додавання дня народження для John
-        john_record.add_birthday("25.10.2000")
+        john_record.add_birthday("28.10.2000")
 
-        # Додавання запису John до адресної книги
         book.add_record(john_record)
 
-        # Створення та додавання нового запису для Jane
         jane_record = Record("Jane")
         jane_record.add_phone("9876543210")
-        # Додавання дня народження для Jane
-        jane_record.add_birthday("27.10.2001")
+        jane_record.add_birthday("31.10.2001")
         book.add_record(jane_record)
 
-        # Виведення всіх записів у книзі
         for name, record in book.data.items():
             print(record)
 
-        # Знаходження та редагування телефону для John
         john = book.find("John")
         john.edit_phone("1234567890", "1112223333")
 
         print(john)
 
-        # Пошук конкретного телефону у записі John
         found_phone = john.find_phone("5555555555")
-        # Виведення: John: 5555555555
         print(f"{john.name}: {found_phone}")
 
-        # Виведення ДН на тиждень
         result = book.get_birthdays_per_week()
         print(result)
 
-        # Видалення запису Jane
         book.delete("Jane")
 
-        # Виведення всіх записів у книзі
-        # після видалення запису Jane та оновлення запису John
         for name, record in book.data.items():
             print(record)
 
