@@ -96,28 +96,33 @@ class AddressBook(UserDict):
         birthdays = defaultdict(list)
         today = datetime.today().date()
 
+        if not users:
+            return "No users found"
+
         for user in users:
             name = user.name.value
-            birthday = user.birthday.value
-            birthday_this_year = birthday.replace(year=today.year)
+            birthday = user.birthday.value if user.birthday else None
+            if birthday:
+                birthday_this_year = birthday.replace(year=today.year)
+                if birthday_this_year:
 
-            if birthday_this_year < today:
-                birthday_this_year = birthday_this_year.replace(
-                    year=today.year + 1
-                )
+                    if birthday_this_year < today:
+                        birthday_this_year = birthday_this_year.replace(
+                            year=today.year + 1
+                        )
 
-            # if the day of the week is Saturday
-            if birthday_this_year.weekday() == 5:
-                # moves birthday to the following Monday
-                birthday_this_year += timedelta(days=2)
-            # if the day of the week is Sunday
-            elif birthday_this_year.weekday() == 6:
-                # moves birthday to the following Monday
-                birthday_this_year += timedelta(days=1)
+                    # if the day of the week is Saturday
+                    if birthday_this_year.weekday() == 5:
+                        # moves birthday to the following Monday
+                        birthday_this_year += timedelta(days=2)
+                    # if the day of the week is Sunday
+                    elif birthday_this_year.weekday() == 6:
+                        # moves birthday to the following Monday
+                        birthday_this_year += timedelta(days=1)
 
-            delta_days = (birthday_this_year - today).days
-            if delta_days > 0 and delta_days <= 7:
-                birthdays[birthday_this_year].append(name)
+                    delta_days = (birthday_this_year - today).days
+                    if delta_days > 0 and delta_days <= 7:
+                        birthdays[birthday_this_year].append(name)
 
         if len(birthdays) == 0:
             print("No birthdays found")

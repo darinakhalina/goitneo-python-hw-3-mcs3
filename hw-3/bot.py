@@ -81,8 +81,16 @@ def show_all(args, book):
 @input_error
 def add_birthday(args, book):
     name, date = args
-    book.find(name).add_birthday(date)
-    return f"Added birth date for {name}"
+    user = book.find(name)
+
+    if user:
+        user.add_birthday(date)
+        return f"Added birth date for {name}"
+    else:
+        return (
+            f"No user with the name '{name}' found.\n"
+            "Add contact first."
+        )
 
 
 @input_error
@@ -98,6 +106,12 @@ def show_birthday(args, book):
     return str(birthday)
 
 
+@input_error
+def get_birthdays_per_week(args, book):
+    users = book.get_birthdays_per_week()
+    return users
+
+
 # toDo - add birthdays!!!!!!!!!
 # map command names to the corresponding functions
 COMMANDS = {
@@ -108,6 +122,7 @@ COMMANDS = {
     show_all: ("all",),
     add_birthday: ("add-birthday",),
     show_birthday: ("show-birthday",),
+    get_birthdays_per_week: ("birthdays",),
 }
 
 
