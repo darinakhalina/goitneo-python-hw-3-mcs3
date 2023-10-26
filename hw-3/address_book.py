@@ -138,7 +138,7 @@ class AddressBook(UserDict):
         for day in sorted_birthdays:
             result += f"{day.strftime('%A')}: {', '.join(birthdays[day])}\n"
 
-        return result
+        return result.rstrip()
 
     def __str__(self):
         result = ""
