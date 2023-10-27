@@ -34,15 +34,46 @@ def input_error(func):
         except KeyError:
             return "Give me defined contact please."
         except ValueError:
-            return "Give me correct command please."
+            return (
+                "Give me correct command please. "
+                "To view all commands enter 'commands'."
+            )
         except IndexError:
             return "Give me name please."
     return inner
 
 
+# command: hello
 @input_error
 def hello_command(*args):
     return "How can I help you?"
+
+
+# command: commands
+@input_error
+def show_commands(*args):
+    return (
+        "command 'hello': show a welcome message. "
+        "format: 'hello'\n"
+        "command 'exit': close the bot. "
+        "format: 'exit'\n"
+        "command 'add': add new contact. number must contain 10 digits. "
+        "format: 'add Test 1111111111'\n"
+        "command 'change': change a number. number must contain 10 digits. "
+        "format: 'change Test 1111111111 2222222222'\n"
+        "command 'phone': show a contact. "
+        "format: 'phone Test'\n"
+        "command 'all': show all contacts. "
+        "format: 'all'\n"
+        "command 'clear': clear all contacts. "
+        "format: 'clear'\n"
+        "command 'add-birthday': add birthday to contact. "
+        "format: 'add-birthday Test 01.11.2000'\n"
+        "command 'show-birthday': show a birthday. "
+        "format: 'show-birthday Test'\n"
+        "command 'birthdays': shows contacts to congratulate this week. "
+        "format: 'birthdays'"
+    )
 
 
 # command: add Test 1111111111 - number must contain 10 digits
@@ -136,6 +167,7 @@ COMMANDS = {
     add_birthday: ("add-birthday",),
     show_birthday: ("show-birthday",),
     get_birthdays_per_week: ("birthdays",),
+    show_commands: ("commands",),
 }
 
 
@@ -152,7 +184,7 @@ def main():
     loaded_book = load_data_from_file(ADDRESS_BOOK_FILE)
     if loaded_book:
         book = loaded_book
-        print("Address book is loaded from file.")
+        print("Address book is loaded.")
 
     while True:
         user_input = input("Enter a command: ")
@@ -167,7 +199,7 @@ def main():
 
         if command in ["close", "exit"]:
             save_data_to_file(ADDRESS_BOOK_FILE, book)
-            print("Good bye! Address book is saved to file.")
+            print("Good bye! Address book is saved.")
             break
 
         command_action = None
@@ -180,7 +212,7 @@ def main():
         if command_action is not None:
             print(command_action(args, book))
         else:
-            print("Invalid command.")
+            print("Invalid command. To view all commands enter 'commands'.")
 
 
 if __name__ == "__main__":
